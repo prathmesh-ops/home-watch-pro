@@ -27,9 +27,9 @@ export function PropertyCard({ property, onPress }: PropertyCardProps) {
       className="w-full text-left bg-card rounded-xl border border-border overflow-hidden hover:border-primary/30 transition-colors"
     >
       <div className="aspect-[16/9] bg-muted relative">
-        {property.thumbnail ? (
+        {(property.image || property.thumbnail) ? (
           <img
-            src={property.thumbnail}
+            src={property.image || property.thumbnail}
             alt={property.address}
             className="w-full h-full object-cover"
           />

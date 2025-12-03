@@ -33,9 +33,11 @@ interface PhotoPreviewModalProps {
   onClose: () => void;
   onDelete: (id: string) => void;
   onReplace: (id: string) => void;
+  onAddNote: (id: string) => void;
+  onCompare: (id: string) => void;
 }
 
-function PhotoPreviewModal({ photo, onClose, onDelete, onReplace }: PhotoPreviewModalProps) {
+function PhotoPreviewModal({ photo, onClose, onDelete, onReplace, onAddNote, onCompare }: PhotoPreviewModalProps) {
   if (!photo) return null;
 
   return (
@@ -81,11 +83,11 @@ function PhotoPreviewModal({ photo, onClose, onDelete, onReplace }: PhotoPreview
             </div>
           )}
           <div className="flex gap-2 mt-3">
-            <Button variant="outline" className="flex-1">
+            <Button variant="outline" className="flex-1" onClick={() => onAddNote(photo.id)}>
               <MessageSquare className="h-4 w-4 mr-2" />
               Add Note
             </Button>
-            <Button variant="outline" className="flex-1">
+            <Button variant="outline" className="flex-1" onClick={() => onCompare(photo.id)}>
               Compare
             </Button>
           </div>
@@ -121,6 +123,17 @@ export default function PhotoGallery() {
   const handleReplace = (photoId: string) => {
     setSelectedPhoto(null);
     navigate('/capture');
+  };
+
+  const handleAddNote = (photoId: string) => {
+    setSelectedPhoto(null);
+    // You can add a note dialog here or navigate to a notes page
+    alert('Add note functionality - Photo ID: ' + photoId);
+  };
+
+  const handleCompare = (photoId: string) => {
+    setSelectedPhoto(null);
+    navigate(`/properties/${id}/photos/compare?photo=${photoId}`);
   };
 
   return (
@@ -278,6 +291,8 @@ export default function PhotoGallery() {
           onClose={() => setSelectedPhoto(null)}
           onDelete={handleDelete}
           onReplace={handleReplace}
+          onAddNote={handleAddNote}
+          onCompare={handleCompare}
         />
       )}
     </MobileLayout>

@@ -20,6 +20,7 @@ export interface Property {
   lastUpdated: string;
   riskLevel?: 'low' | 'medium' | 'high';
   thumbnail?: string;
+  image?: string;
 }
 
 export interface Photo {

@@ -48,19 +48,23 @@ export default function AgentDashboard() {
 
           {/* Stats */}
           <div className="grid grid-cols-2 gap-3">
-            <StatCard
-              title="Total Clients"
-              value="24"
-              icon={Users}
-              trend={{ value: 8, isPositive: true }}
-              variant="default"
-            />
-            <StatCard
-              title="Properties"
-              value="47"
-              icon={Building2}
-              variant="default"
-            />
+            <button onClick={() => navigate('/agent/clients')} className="text-left">
+              <StatCard
+                title="Total Clients"
+                value="24"
+                icon={Users}
+                trend={{ value: 8, isPositive: true }}
+                variant="default"
+              />
+            </button>
+            <button onClick={() => navigate('/agent/properties')} className="text-left">
+              <StatCard
+                title="Properties"
+                value="47"
+                icon={Building2}
+                variant="default"
+              />
+            </button>
           </div>
         </div>
 
