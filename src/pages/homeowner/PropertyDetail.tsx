@@ -1,4 +1,4 @@
-import { useParams, useNavigate } from 'react-router-dom';
+import { useParams, useNavigate, useLocation } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { MapPin, Calendar, Camera, Shield, AlertTriangle, ChevronRight, Plus, FileText, DollarSign, User, Clock, Image } from 'lucide-react';
 import { MobileLayout } from '@/components/layout/MobileLayout';
@@ -97,6 +97,8 @@ const timeline = [
 export default function PropertyDetail() {
   const { id } = useParams();
   const navigate = useNavigate();
+  const location = useLocation();
+  const isAgentView = location.pathname.startsWith('/agent');
 
   return (
     <MobileLayout>
@@ -356,10 +358,23 @@ export default function PropertyDetail() {
 
         {/* Action Button */}
         <div className="px-4 mt-6">
-          <Button className="w-full h-14 text-lg font-semibold bg-gradient-to-r from-primary to-primary/90 hover:from-primary/90 hover:to-primary shadow-lg" onClick={() => navigate('/capture')}>
-            <Plus className="h-5 w-5 mr-2" />
-            Add New Photos
-          </Button>
+          {isAgentView ? (
+            <Button 
+              className="w-full h-14 text-lg font-semibold bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 shadow-lg text-white" 
+              onClick={() => navigate(`/agent/properties/${id}/request-photos`)}
+            >
+              <Camera className="h-5 w-5 mr-2" />
+              Request Photos from Client
+            </Button>
+          ) : (
+            <Button 
+              className="w-full h-14 text-lg font-semibold bg-gradient-to-r from-primary to-primary/90 hover:from-primary/90 hover:to-primary shadow-lg" 
+              onClick={() => navigate('/capture')}
+            >
+              <Plus className="h-5 w-5 mr-2" />
+              Add New Photos
+            </Button>
+          )}
         </div>
       </div>
     </MobileLayout>

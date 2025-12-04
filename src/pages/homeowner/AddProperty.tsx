@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { MapPin, Home, Calendar, FileText, Loader2 } from 'lucide-react';
+import { MapPin, Home, Calendar, FileText, Loader2, Map } from 'lucide-react';
 import { MobileLayout } from '@/components/layout/MobileLayout';
 import { PageHeader } from '@/components/layout/PageHeader';
 import { Button } from '@/components/ui/button';
@@ -34,6 +34,8 @@ export default function AddProperty() {
   const { toast } = useToast();
   const [isLoading, setIsLoading] = useState(false);
   const [errors, setErrors] = useState<FormErrors>({});
+  const [showMap, setShowMap] = useState(false);
+  const [pinPosition, setPinPosition] = useState({ x: 50, y: 50 });
   
   const [formData, setFormData] = useState<FormData>({
     address: '',
@@ -51,6 +53,19 @@ export default function AddProperty() {
     if (errors[field]) {
       setErrors(prev => ({ ...prev, [field]: undefined }));
     }
+    // Show map when zipcode is entered and valid
+    if (field === 'zipCode' && /^\d{5}(-\d{4})?$/.test(value)) {
+      setShowMap(true);
+    } else if (field === 'zipCode' && value.length < 5) {
+      setShowMap(false);
+    }
+  };
+
+  const handleMapClick = (e: React.MouseEvent<HTMLDivElement>) => {
+    const rect = e.currentTarget.getBoundingClientRect();
+    const x = ((e.clientX - rect.left) / rect.width) * 100;
+    const y = ((e.clientY - rect.top) / rect.height) * 100;
+    setPinPosition({ x, y });
   };
 
   const validateForm = (): boolean => {
@@ -175,6 +190,80 @@ export default function AddProperty() {
               <p className="text-xs text-destructive">{errors.zipCode}</p>
             )}
           </div>
+
+          {/* Map Selection */}
+          {showMap && (
+            <motion.div
+              initial={{ opacity: 0, height: 0 }}
+              animate={{ opacity: 1, height: 'auto' }}
+              transition={{ duration: 0.3 }}
+              className="space-y-2"
+            >
+              <Label className="flex items-center gap-2">
+                <Map className="h-4 w-4 text-muted-foreground" />
+                Select Property Location
+              </Label>
+              <div className="bg-gradient-to-br from-blue-50 to-green-50 rounded-xl p-3 border-2 border-blue-200">
+                <p className="text-xs text-muted-foreground mb-2">Tap on the map to mark your property location</p>
+                <div
+                  onClick={handleMapClick}
+                  className="relative w-full h-64 bg-white rounded-lg border-2 border-dashed border-primary/30 cursor-crosshair overflow-hidden shadow-inner"
+                  style={{
+                    backgroundImage: `
+                      linear-gradient(to right, #e5e7eb 1px, transparent 1px),
+                      linear-gradient(to bottom, #e5e7eb 1px, transparent 1px)
+                    `,
+                    backgroundSize: '20px 20px'
+                  }}
+                >
+                  {/* Map Background Pattern */}
+                  <div className="absolute inset-0 bg-gradient-to-br from-blue-100/50 via-transparent to-green-100/50" />
+                  
+                  {/* Simulated Streets */}
+                  <div className="absolute top-1/3 left-0 right-0 h-2 bg-gray-300/50" />
+                  <div className="absolute left-1/3 top-0 bottom-0 w-2 bg-gray-300/50" />
+                  <div className="absolute top-2/3 left-0 right-0 h-2 bg-gray-300/50" />
+                  <div className="absolute left-2/3 top-0 bottom-0 w-2 bg-gray-300/50" />
+                  
+                  {/* Location Pin */}
+                  <motion.div
+                    initial={{ scale: 0 }}
+                    animate={{ scale: 1 }}
+                    transition={{ type: 'spring', stiffness: 200 }}
+                    className="absolute transform -translate-x-1/2 -translate-y-full"
+                    style={{
+                      left: `${pinPosition.x}%`,
+                      top: `${pinPosition.y}%`
+                    }}
+                  >
+                    <div className="relative">
+                      {/* Pin Shadow */}
+                      <div className="absolute top-12 left-1/2 transform -translate-x-1/2 w-8 h-2 bg-black/20 rounded-full blur-sm" />
+                      
+                      {/* Pin Icon */}
+                      <div className="relative">
+                        <MapPin className="h-12 w-12 text-red-500 drop-shadow-lg animate-bounce" fill="currentColor" />
+                      </div>
+                      
+                      {/* Ripple Effect */}
+                      <div className="absolute top-0 left-1/2 transform -translate-x-1/2 -translate-y-1/2">
+                        <div className="w-4 h-4 bg-red-500/30 rounded-full animate-ping" />
+                      </div>
+                    </div>
+                  </motion.div>
+                  
+                  {/* Coordinates Display */}
+                  <div className="absolute bottom-2 right-2 bg-white/90 backdrop-blur-sm px-3 py-1.5 rounded-lg border border-gray-200 text-xs font-mono">
+                    {pinPosition.x.toFixed(1)}°, {pinPosition.y.toFixed(1)}°
+                  </div>
+                </div>
+                <p className="text-xs text-green-700 mt-2 flex items-center gap-1">
+                  <span className="inline-block w-2 h-2 bg-green-500 rounded-full animate-pulse" />
+                  Location marked successfully
+                </p>
+              </div>
+            </motion.div>
+          )}
 
           {/* Property Type & Year */}
           <div className="grid grid-cols-2 gap-3">

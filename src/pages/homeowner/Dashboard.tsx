@@ -21,6 +21,7 @@ const mockProperties: Property[] = [
     photoCount: 24,
     lastUpdated: '2 days ago',
     riskLevel: 'low',
+    image: 'https://images.unsplash.com/photo-1568605114967-8130f3a36994?w=600',
   },
   {
     id: '2',
@@ -31,6 +32,7 @@ const mockProperties: Property[] = [
     photoCount: 12,
     lastUpdated: '1 week ago',
     riskLevel: 'medium',
+    image: 'https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?w=600',
   },
 ];
 

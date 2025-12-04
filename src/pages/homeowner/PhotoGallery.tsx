@@ -1,7 +1,8 @@
 import { useState } from 'react';
 import { useParams, useNavigate, useSearchParams } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Grid, Calendar, Folder, Plus, X, ZoomIn, Trash2, RefreshCw, MessageSquare } from 'lucide-react';
+import { Grid, Calendar, Folder, Plus, X, ZoomIn, Trash2, RefreshCw, MessageSquare, Pencil } from 'lucide-react';
+import { ImageAnnotation } from '@/components/ui/image-annotation';
 import { MobileLayout } from '@/components/layout/MobileLayout';
 import { PageHeader } from '@/components/layout/PageHeader';
 import { Button } from '@/components/ui/button';
@@ -35,9 +36,10 @@ interface PhotoPreviewModalProps {
   onReplace: (id: string) => void;
   onAddNote: (id: string) => void;
   onCompare: (id: string) => void;
+  onAnnotate: (id: string) => void;
 }
 
-function PhotoPreviewModal({ photo, onClose, onDelete, onReplace, onAddNote, onCompare }: PhotoPreviewModalProps) {
+function PhotoPreviewModal({ photo, onClose, onDelete, onReplace, onAddNote, onCompare, onAnnotate }: PhotoPreviewModalProps) {
   if (!photo) return null;
 
   return (
@@ -53,6 +55,9 @@ function PhotoPreviewModal({ photo, onClose, onDelete, onReplace, onAddNote, onC
             <X className="h-5 w-5" />
           </Button>
           <div className="flex gap-2">
+            <Button variant="ghost" size="icon" onClick={() => onAnnotate(photo.id)}>
+              <Pencil className="h-5 w-5 text-blue-500" />
+            </Button>
             <Button variant="ghost" size="icon" onClick={() => onReplace(photo.id)}>
               <RefreshCw className="h-5 w-5" />
             </Button>
@@ -104,6 +109,7 @@ export default function PhotoGallery() {
   const [viewMode, setViewMode] = useState<ViewMode>('grid');
   const [selectedCategory, setSelectedCategory] = useState<string | null>(searchParams.get('category'));
   const [selectedPhoto, setSelectedPhoto] = useState<typeof mockPhotos[0] | null>(null);
+  const [annotatingPhoto, setAnnotatingPhoto] = useState<typeof mockPhotos[0] | null>(null);
 
   const filteredPhotos = selectedCategory
     ? mockPhotos.filter(p => p.category === selectedCategory)
@@ -134,6 +140,14 @@ export default function PhotoGallery() {
   const handleCompare = (photoId: string) => {
     setSelectedPhoto(null);
     navigate(`/properties/${id}/photos/compare?photo=${photoId}`);
+  };
+
+  const handleAnnotate = (photoId: string) => {
+    const photo = mockPhotos.find(p => p.id === photoId);
+    if (photo) {
+      setAnnotatingPhoto(photo);
+      setSelectedPhoto(null);
+    }
   };
 
   return (
@@ -293,6 +307,19 @@ export default function PhotoGallery() {
           onReplace={handleReplace}
           onAddNote={handleAddNote}
           onCompare={handleCompare}
+          onAnnotate={handleAnnotate}
+        />
+      )}
+
+      {/* Image Annotation Modal */}
+      {annotatingPhoto && (
+        <ImageAnnotation
+          imageUrl={annotatingPhoto.url}
+          onClose={() => setAnnotatingPhoto(null)}
+          onSave={(annotations) => {
+            console.log('Saved annotations:', annotations);
+            setAnnotatingPhoto(null);
+          }}
         />
       )}
     </MobileLayout>

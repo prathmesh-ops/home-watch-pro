@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { User, Mail, Phone, MapPin, Loader2, CheckCircle2 } from 'lucide-react';
+import { User, Mail, Phone, MapPin, Loader2, CheckCircle2, Shield, FileText, DollarSign, Calendar } from 'lucide-react';
 import { MobileLayout } from '@/components/layout/MobileLayout';
 import { PageHeader } from '@/components/layout/PageHeader';
 import { Button } from '@/components/ui/button';
@@ -19,6 +19,10 @@ const clientSchema = z.object({
   city: z.string().min(2, 'City is required'),
   state: z.string().min(2, 'State is required'),
   zipCode: z.string().regex(/^\d{5}(-\d{4})?$/, 'Invalid ZIP code'),
+  policyNumber: z.string().optional(),
+  policyProvider: z.string().optional(),
+  policyCoverage: z.string().optional(),
+  policyExpiry: z.string().optional(),
   notes: z.string().max(500).optional(),
 });
 
@@ -39,6 +43,10 @@ export default function AddClient() {
     city: '',
     state: '',
     zipCode: '',
+    policyNumber: '',
+    policyProvider: '',
+    policyCoverage: '',
+    policyExpiry: '',
     notes: '',
   });
 
@@ -239,6 +247,74 @@ export default function AddClient() {
                   {errors.zipCode && (
                     <p className="text-xs text-red-600">{errors.zipCode}</p>
                   )}
+                </div>
+              </div>
+            </div>
+
+            {/* Policy Details */}
+            <div className="bg-gradient-to-br from-purple-50 to-purple-100/30 rounded-2xl p-5 border-2 border-purple-200">
+              <h3 className="font-semibold text-purple-900 mb-4 flex items-center gap-2">
+                <Shield className="h-5 w-5" />
+                Policy Details (Optional)
+              </h3>
+              
+              <div className="space-y-4">
+                <div className="space-y-2">
+                  <Label htmlFor="policyNumber" className="flex items-center gap-2 text-sm font-medium text-gray-700">
+                    <FileText className="h-4 w-4 text-purple-600" />
+                    Policy Number
+                  </Label>
+                  <Input
+                    id="policyNumber"
+                    placeholder="POL-2024-123456"
+                    value={formData.policyNumber}
+                    onChange={(e) => handleChange('policyNumber', e.target.value)}
+                    className="bg-white border-2 border-gray-200 focus:border-purple-500"
+                  />
+                </div>
+
+                <div className="space-y-2">
+                  <Label htmlFor="policyProvider" className="flex items-center gap-2 text-sm font-medium text-gray-700">
+                    <Shield className="h-4 w-4 text-purple-600" />
+                    Insurance Provider
+                  </Label>
+                  <Input
+                    id="policyProvider"
+                    placeholder="State Farm, Allstate, etc."
+                    value={formData.policyProvider}
+                    onChange={(e) => handleChange('policyProvider', e.target.value)}
+                    className="bg-white border-2 border-gray-200 focus:border-purple-500"
+                  />
+                </div>
+
+                <div className="grid grid-cols-2 gap-3">
+                  <div className="space-y-2">
+                    <Label htmlFor="policyCoverage" className="flex items-center gap-2 text-sm font-medium text-gray-700">
+                      <DollarSign className="h-4 w-4 text-purple-600" />
+                      Coverage Amount
+                    </Label>
+                    <Input
+                      id="policyCoverage"
+                      placeholder="$350,000"
+                      value={formData.policyCoverage}
+                      onChange={(e) => handleChange('policyCoverage', e.target.value)}
+                      className="bg-white border-2 border-gray-200 focus:border-purple-500"
+                    />
+                  </div>
+
+                  <div className="space-y-2">
+                    <Label htmlFor="policyExpiry" className="flex items-center gap-2 text-sm font-medium text-gray-700">
+                      <Calendar className="h-4 w-4 text-purple-600" />
+                      Expiry Date
+                    </Label>
+                    <Input
+                      id="policyExpiry"
+                      type="date"
+                      value={formData.policyExpiry}
+                      onChange={(e) => handleChange('policyExpiry', e.target.value)}
+                      className="bg-white border-2 border-gray-200 focus:border-purple-500"
+                    />
+                  </div>
                 </div>
               </div>
             </div>
