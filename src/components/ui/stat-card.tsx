@@ -36,13 +36,18 @@ export function StatCard({ title, value, icon: Icon, trend, variant = 'default' 
         <div>
           <p className="text-sm text-muted-foreground mb-1">{title}</p>
           <p className="text-2xl font-semibold text-foreground">{value}</p>
-          {trend && (
+          {title !== 'Properties' && trend && (
             <p className={cn(
               'text-xs mt-1 font-medium',
               trend.isPositive ? 'text-success' : 'text-destructive'
             )}>
               {trend.isPositive ? '+' : ''}{trend.value}% from last month
             </p>
+          )}
+          {title === 'Properties' && (
+            <span className="text-xs text-green-800 bg-green-300/10 mt-1 border border-primary/10 rounded-full px-1 py-1 font-medium text-muted-foreground">
+              Avg. Health Score:{trend.value} 
+            </span>
           )}
         </div>
         <div className={cn(

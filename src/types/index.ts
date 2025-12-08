@@ -21,6 +21,7 @@ export interface Property {
   riskLevel?: 'low' | 'medium' | 'high';
   thumbnail?: string;
   image?: string;
+  healthScore?: 'good' | 'fair' | 'poor';
 }
 
 export interface Photo {

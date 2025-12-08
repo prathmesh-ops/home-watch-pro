@@ -1,6 +1,7 @@
 import { useParams, useNavigate, useLocation } from 'react-router-dom';
+import { useState } from 'react';
 import { motion } from 'framer-motion';
-import { MapPin, Calendar, Camera, Shield, AlertTriangle, ChevronRight, Plus, FileText, DollarSign, User, Clock, Image } from 'lucide-react';
+import { MapPin, Calendar, Camera, Shield, AlertTriangle, ChevronRight, Plus, FileText, DollarSign, User, Clock, Image, CheckSquare, Package, Circle, CheckCircle2 } from 'lucide-react';
 import { MobileLayout } from '@/components/layout/MobileLayout';
 import { PageHeader } from '@/components/layout/PageHeader';
 import { Button } from '@/components/ui/button';
@@ -15,10 +16,10 @@ const propertyImages = [
 ];
 
 const photoCategories = [
-  { id: 'exterior', label: 'Exterior', count: 8, icon: '🏠', color: 'from-blue-500 to-blue-600' },
-  { id: 'interior', label: 'Interior', count: 12, icon: '🛋️', color: 'from-purple-500 to-purple-600' },
-  { id: 'roof', label: 'Roof', count: 4, icon: '🏗️', color: 'from-orange-500 to-orange-600' },
-  { id: 'damage', label: 'Damage', count: 2, icon: '⚠️', color: 'from-red-500 to-red-600' },
+  { id: 'exterior', label: 'Exterior', count: 8, icon: '🏠', color: 'from-blue-500 to-blue-600' ,bgImage:'https://images.unsplash.com/photo-1568605114967-8130f3a36994?w=800'},
+  { id: 'interior', label: 'Interior', count: 12, icon: '🛋️', color: 'from-purple-500 to-purple-600',bgImage:'https://plus.unsplash.com/premium_photo-1670360414483-64e6d9ba9038?q=80&w=870&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D' },
+  { id: 'roof', label: 'Roof', count: 4, icon: '🏗️', color: 'from-orange-500 to-orange-600',bgImage:'https://images.unsplash.com/photo-1557671009-600c3a1973ca?q=80&w=774&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D' },
+  { id: 'damage', label: 'Damage', count: 2, icon: '⚠️', color: 'from-red-500 to-red-600',bgImage:'https://plus.unsplash.com/premium_photo-1675630925629-2de5c664c908?q=80&w=387&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D' },
 ];
 
 const riskIndicators = [
@@ -36,6 +37,25 @@ const policyDetails = {
   expiryDate: 'Jan 15, 2025',
   agent: 'Sarah Johnson',
 };
+
+const checklistItems = [
+  { id: '1', category: 'Exterior', task: 'Inspect roof for damage', completed: true, dueDate: '2024-12-01' },
+  { id: '2', category: 'Exterior', task: 'Check gutters and downspouts', completed: true, dueDate: '2024-12-01' },
+  { id: '3', category: 'Exterior', task: 'Photograph all sides of property', completed: false, dueDate: '2024-12-15' },
+  { id: '4', category: 'Interior', task: 'Document valuable items', completed: false, dueDate: '2024-12-20' },
+  { id: '5', category: 'Interior', task: 'Check smoke detectors', completed: true, dueDate: '2024-11-30' },
+  { id: '6', category: 'Safety', task: 'Test fire extinguishers', completed: false, dueDate: '2024-12-25' },
+  { id: '7', category: 'Maintenance', task: 'HVAC system inspection', completed: true, dueDate: '2024-11-15' },
+];
+
+const inventoryItems = [
+  { id: '1', name: 'Living Room TV', category: 'Electronics', value: '$1,200', photo: 'https://images.unsplash.com/photo-1593359677879-a4bb92f829d1?w=200', purchaseDate: '2023-05-10' },
+  { id: '2', name: 'Leather Sofa Set', category: 'Furniture', value: '$3,500', photo: 'https://images.unsplash.com/photo-1555041469-a586c61ea9bc?w=200', purchaseDate: '2022-08-20' },
+  { id: '3', name: 'MacBook Pro', category: 'Electronics', value: '$2,400', photo: 'https://images.unsplash.com/photo-1517336714731-489689fd1ca8?w=200', purchaseDate: '2024-01-15' },
+  { id: '4', name: 'Dining Table', category: 'Furniture', value: '$1,800', photo: 'https://images.unsplash.com/photo-1617806118233-18e1de247200?w=200', purchaseDate: '2022-06-05' },
+  { id: '5', name: 'Refrigerator', category: 'Appliances', value: '$2,200', photo: 'https://images.unsplash.com/photo-1571175443880-49e1d25b2bc5?w=200', purchaseDate: '2023-03-12' },
+  { id: '6', name: 'Washer & Dryer', category: 'Appliances', value: '$1,600', photo: 'https://images.unsplash.com/photo-1626806787461-102c1bfaaea1?w=200', purchaseDate: '2023-07-22' },
+];
 
 const timeline = [
   { 
@@ -99,72 +119,171 @@ export default function PropertyDetail() {
   const navigate = useNavigate();
   const location = useLocation();
   const isAgentView = location.pathname.startsWith('/agent');
+  const [activeTab, setActiveTab] = useState('overview');
 
   return (
     <MobileLayout>
       <PageHeader title="Property Details" showBack />
 
       <div className="flex-1 pb-8">
-        {/* Hero Image Carousel */}
-        <div className="aspect-[16/10] relative overflow-hidden">
-          <img 
-            src={propertyImages[0]} 
-            alt="Property" 
-            className="w-full h-full object-cover"
-          />
-          <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent" />
-          <div className="absolute bottom-0 left-0 right-0 p-5">
-            <Badge className="bg-green-500 text-white mb-2 shadow-lg">GOOD CONDITION</Badge>
-            <h2 className="text-2xl font-bold text-white">123 Oak Street</h2>
-            <div className="flex items-center gap-2 text-white/90 mt-1">
-              <MapPin className="h-4 w-4" />
-              <span className="text-sm">Austin, TX 78701</span>
+        {/* Hero Image with Prominent Score Badge */}
+        <div className="relative">
+          <div className="aspect-[16/10] relative overflow-hidden">
+            <img 
+              src={propertyImages[0]} 
+              alt="Property" 
+              className="w-full h-full object-cover"
+            />
+            <div className="absolute inset-0 bg-gradient-to-t from-black/50 via-transparent to-transparent" />
+            {/* Image indicators */}
+            <div className="absolute bottom-3 left-3 flex gap-1">
+              {propertyImages.map((_, idx) => (
+                <div key={idx} className={cn("h-1.5 rounded-full", idx === 0 ? "w-6 bg-white" : "w-1.5 bg-white/50")} />
+              ))}
             </div>
           </div>
-          {/* Image indicators */}
-          <div className="absolute bottom-3 right-3 flex gap-1">
-            {propertyImages.map((_, idx) => (
-              <div key={idx} className={cn("h-1.5 rounded-full", idx === 0 ? "w-6 bg-white" : "w-1.5 bg-white/50")} />
-            ))}
-          </div>
+          
+          {/* Prominent Score Badge with Progress Ring */}
+          <motion.div
+            initial={{ scale: 0.8, opacity: 0 }}
+            animate={{ scale: 1, opacity: 1 }}
+            transition={{ duration: 0.6, type: "spring", bounce: 0.4 }}
+            className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2"
+          >
+            <div className="relative">
+              {/* Progress Ring */}
+              <svg className="w-32 h-32 transform -rotate-90" viewBox="0 0 120 120">
+                <circle
+                  cx="60"
+                  cy="60"
+                  r="52"
+                  fill="none"
+                  stroke="rgba(255,255,255,0.25)"
+                  strokeWidth="8"
+                />
+                <motion.circle
+                  cx="60"
+                  cy="60"
+                  r="52"
+                  fill="none"
+                  stroke="#22c55e"
+                  strokeWidth="8"
+                  strokeLinecap="round"
+                  strokeDasharray={`${(92 / 100) * 327} 327`}
+                  initial={{ strokeDasharray: "0 327" }}
+                  animate={{ strokeDasharray: `${(92 / 100) * 327} 327` }}
+                  transition={{ duration: 1.5, ease: "easeOut", delay: 0.2 }}
+                />
+              </svg>
+              
+              {/* Score Number */}
+              <div className="absolute inset-0 flex flex-col items-center justify-center">
+                <motion.span
+                  initial={{ scale: 0 }}
+                  animate={{ scale: 1 }}
+                  transition={{ delay: 0.4, duration: 0.5, type: "spring" }}
+                  className="text-5xl font-black text-white drop-shadow-2xl"
+                >
+                  92
+                </motion.span>
+                <span className="text-xs text-white/90 font-bold tracking-widest mt-1">SCORE</span>
+              </div>
+            </div>
+          </motion.div>
         </div>
 
         {/* Property Info */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.3 }}
+          transition={{ duration: 0.3, delay: 0.2 }}
           className="px-4 py-4"
         >
-          <div className="bg-card rounded-xl border border-border p-4">
+          <div className="bg-white rounded-2xl border border-gray-100 p-5 shadow-sm">
             <div className="grid grid-cols-3 gap-4">
               <div className="text-center">
-                <p className="text-sm text-muted-foreground">Type</p>
-                <p className="font-medium text-foreground capitalize">House</p>
+                <p className="text-xs text-gray-500 font-medium mb-1">Type</p>
+                <p className="font-bold text-gray-900 capitalize">House</p>
               </div>
-              <div className="text-center border-x border-border">
-                <p className="text-sm text-muted-foreground">Year Built</p>
-                <p className="font-medium text-foreground">2018</p>
+              <div className="text-center border-x border-gray-200">
+                <p className="text-xs text-gray-500 font-medium mb-1">Year Built</p>
+                <p className="font-bold text-gray-900">2018</p>
               </div>
               <div className="text-center">
-                <p className="text-sm text-muted-foreground">Policy</p>
-                <p className="font-medium text-foreground">Active</p>
+                <p className="text-xs text-gray-500 font-medium mb-1">Policy</p>
+                <p className="font-bold text-green-600">Active</p>
               </div>
             </div>
           </div>
         </motion.div>
 
-        {/* Policy Details */}
+        {/* Tab Navigation */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.3, delay: 0.1 }}
+          transition={{ duration: 0.3, delay: 0.25 }}
           className="px-4 mt-4"
         >
-          <div className="bg-gradient-to-br from-blue-50 to-blue-100/50 rounded-2xl p-5 border-2 border-blue-200">
+          <div className="bg-white rounded-2xl border border-gray-100 p-2 shadow-sm">
+            <div className="grid grid-cols-4 gap-2">
+              <button
+                onClick={() => setActiveTab('overview')}
+                className={cn(
+                  'flex flex-col items-center gap-1 py-3 rounded-xl transition-all',
+                  activeTab === 'overview' ? 'bg-blue-100' : 'hover:bg-gray-50'
+                )}
+              >
+                <Image className={cn('h-5 w-5', activeTab === 'overview' ? 'text-blue-600' : 'text-gray-600')} />
+                <span className={cn('text-xs font-medium', activeTab === 'overview' ? 'text-blue-600' : 'text-gray-600')}>Overview</span>
+              </button>
+              <button
+                onClick={() => setActiveTab('checklist')}
+                className={cn(
+                  'flex flex-col items-center gap-1 py-3 rounded-xl transition-all',
+                  activeTab === 'checklist' ? 'bg-green-100' : 'hover:bg-gray-50'
+                )}
+              >
+                <CheckSquare className={cn('h-5 w-5', activeTab === 'checklist' ? 'text-green-600' : 'text-gray-600')} />
+                <span className={cn('text-xs font-medium', activeTab === 'checklist' ? 'text-green-600' : 'text-gray-600')}>Checklist</span>
+              </button>
+              <button
+                onClick={() => setActiveTab('inventory')}
+                className={cn(
+                  'flex flex-col items-center gap-1 py-3 rounded-xl transition-all',
+                  activeTab === 'inventory' ? 'bg-purple-100' : 'hover:bg-gray-50'
+                )}
+              >
+                <Package className={cn('h-5 w-5', activeTab === 'inventory' ? 'text-purple-600' : 'text-gray-600')} />
+                <span className={cn('text-xs font-medium', activeTab === 'inventory' ? 'text-purple-600' : 'text-gray-600')}>Inventory</span>
+              </button>
+              <button
+                onClick={() => setActiveTab('policy')}
+                className={cn(
+                  'flex flex-col items-center gap-1 py-3 rounded-xl transition-all',
+                  activeTab === 'policy' ? 'bg-orange-100' : 'hover:bg-gray-50'
+                )}
+              >
+                <FileText className={cn('h-5 w-5', activeTab === 'policy' ? 'text-orange-600' : 'text-gray-600')} />
+                <span className={cn('text-xs font-medium', activeTab === 'policy' ? 'text-orange-600' : 'text-gray-600')}>Policy</span>
+              </button>
+            </div>
+          </div>
+        </motion.div>
+
+        {/* Tab Content */}
+        {activeTab === 'overview' && (
+          <>
+        {/* Photo Categories */}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.3, delay: 0.3 }}
+          className="px-4 mt-6"
+        >
+          <div className="bg-gradient-to-br from-blue-50 to-blue-100/50 rounded-2xl p-5 border border-blue-200 shadow-sm">
             <div className="flex items-center gap-2 mb-4">
-              <FileText className="h-5 w-5 text-blue-700" />
-              <h3 className="font-bold text-blue-900">Policy Details</h3>
+              <FileText className="h-5 w-5 text-blue-600" />
+              <h3 className="font-bold text-gray-900">Policy Details</h3>
             </div>
             
             <div className="grid grid-cols-2 gap-4">
@@ -214,15 +333,12 @@ export default function PropertyDetail() {
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.3, delay: 0.15 }}
+          transition={{ duration: 0.3, delay: 0.3 }}
           className="px-4 mt-6"
         >
-          <div className="flex items-center justify-between mb-3">
-            <div className="flex items-center gap-2">
-              <Image className="h-5 w-5 text-primary" />
-              <h3 className="font-bold text-foreground">Photo Gallery</h3>
-            </div>
-            <Button variant="ghost" size="sm" onClick={() => navigate(`/properties/${id}/photos`)}>
+          <div className="flex items-center justify-between mb-4">
+            <h3 className="text-lg font-bold text-gray-900">Photo Gallery</h3>
+            <Button variant="ghost" size="sm" onClick={() => navigate(`/properties/${id}/photos`)} className="text-primary font-semibold">
               View All
               <ChevronRight className="h-4 w-4 ml-1" />
             </Button>
@@ -230,16 +346,18 @@ export default function PropertyDetail() {
           <div className="grid grid-cols-2 gap-3">
             {photoCategories.map((cat, idx) => (
               <motion.button
-                key={cat.id}
-                initial={{ opacity: 0, scale: 0.9 }}
-                animate={{ opacity: 1, scale: 1 }}
-                transition={{ duration: 0.3, delay: 0.15 + idx * 0.05 }}
-                onClick={() => navigate(`/properties/${id}/photos?category=${cat.id}`)}
-                className={`bg-gradient-to-br ${cat.color} rounded-2xl p-4 text-left hover:shadow-lg transition-all`}
-              >
-                <span className="text-3xl">{cat.icon}</span>
-                <p className="font-semibold text-white mt-2">{cat.label}</p>
-                <p className="text-sm text-white/90">{cat.count} photos</p>
+  key={cat.id}
+  initial={{ opacity: 0, scale: 0.9 }}
+  animate={{ opacity: 1, scale: 1 }}
+  transition={{ duration: 0.3, delay: 0.35 + idx * 0.05 }}
+  onClick={() => navigate(`/properties/${id}/photos?category=${cat.id}`)}
+  className={`${cat.color} rounded-2xl p-4 text-left hover:shadow-xl transition-all active:scale-95 bg-cover bg-center`}
+  style={{ backgroundImage: `url(${cat.bgImage})` }}
+>
+
+                <span className="text-3xl mb-2 block">{cat.icon}</span>
+                <p className="font-bold text-white">{cat.label}</p>
+                <p className="text-sm text-white/90 font-medium">{cat.count} photos</p>
               </motion.button>
             ))}
           </div>
@@ -249,13 +367,10 @@ export default function PropertyDetail() {
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.3, delay: 0.2 }}
+          transition={{ duration: 0.3, delay: 0.35 }}
           className="px-4 mt-6"
         >
-          <div className="flex items-center gap-2 mb-4">
-            <Clock className="h-5 w-5 text-primary" />
-            <h3 className="font-bold text-foreground">Activity Timeline</h3>
-          </div>
+          <h3 className="text-lg font-bold text-gray-900 mb-4">Activity Timeline</h3>
           
           <div className="relative">
             {/* Timeline line */}
@@ -320,44 +435,196 @@ export default function PropertyDetail() {
           </div>
         </motion.div>
 
-        {/* AI Risk Indicators */}
+        {/* AI Risk Indicators - Collapsible on Mobile */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.3, delay: 0.25 }}
+          transition={{ duration: 0.3, delay: 0.4 }}
           className="px-4 mt-6"
         >
-          <div className="flex items-center gap-2 mb-3">
-            <Shield className="h-5 w-5 text-primary" />
-            <h3 className="font-bold text-foreground">AI Risk Analysis</h3>
-          </div>
+          <h3 className="text-lg font-bold text-gray-900 mb-4">AI Risk Analysis</h3>
           <div className="space-y-3">
-            {riskIndicators.map((risk) => (
-              <div
+            {riskIndicators.map((risk, idx) => (
+              <motion.div
                 key={risk.id}
-                className="bg-white rounded-xl border-2 border-gray-100 p-4 flex items-center justify-between hover:border-primary/30 transition-all"
+                initial={{ opacity: 0, x: -20 }}
+                animate={{ opacity: 1, x: 0 }}
+                transition={{ delay: 0.45 + idx * 0.05 }}
+                className="bg-white rounded-2xl border border-gray-100 p-4 flex items-center justify-between shadow-sm"
               >
-                <div>
-                  <p className="font-semibold text-foreground">{risk.label}</p>
-                  <p className="text-sm text-muted-foreground mt-1">{risk.detail}</p>
+                <div className="flex-1 mr-3">
+                  <p className="font-bold text-gray-900">{risk.label}</p>
+                  <p className="text-sm text-gray-600 mt-1">{risk.detail}</p>
                 </div>
                 <Badge
                   className={cn(
-                    'font-semibold',
+                    'font-bold capitalize',
                     risk.status === 'good' && 'bg-green-100 text-green-700 border-green-200',
                     risk.status === 'warning' && 'bg-orange-100 text-orange-700 border-orange-200',
                     risk.status === 'poor' && 'bg-red-100 text-red-700 border-red-200'
                   )}
                 >
-                  {risk.status.toUpperCase()}
+                  {risk.status}
                 </Badge>
-              </div>
+              </motion.div>
             ))}
           </div>
         </motion.div>
 
+          </>
+        )}
+
+        {/* Checklist Tab */}
+        {activeTab === 'checklist' && (
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="px-4 mt-6"
+          >
+            <div className="flex items-center justify-between mb-4">
+              <h3 className="text-lg font-bold text-gray-900">Property Checklist</h3>
+              <Button size="sm" className="bg-green-600 hover:bg-green-700">
+                <Plus className="h-4 w-4 mr-1" />
+                Add Task
+              </Button>
+            </div>
+            <div className="space-y-3">
+              {checklistItems.map((item, idx) => (
+                <motion.div
+                  key={item.id}
+                  initial={{ opacity: 0, x: -20 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  transition={{ delay: idx * 0.05 }}
+                  className="bg-white rounded-2xl p-4 shadow-sm border border-gray-100"
+                >
+                  <div className="flex items-start gap-3">
+                    <button className="mt-0.5">
+                      {item.completed ? (
+                        <CheckCircle2 className="h-6 w-6 text-green-600" />
+                      ) : (
+                        <Circle className="h-6 w-6 text-gray-300" />
+                      )}
+                    </button>
+                    <div className="flex-1">
+                      <p className={cn(
+                        "font-semibold text-sm",
+                        item.completed ? "text-gray-500 line-through" : "text-gray-900"
+                      )}>
+                        {item.task}
+                      </p>
+                      <div className="flex items-center gap-3 mt-2">
+                        <Badge variant="outline" className="text-xs">
+                          {item.category}
+                        </Badge>
+                        <span className="text-xs text-gray-500">Due: {item.dueDate}</span>
+                      </div>
+                    </div>
+                  </div>
+                </motion.div>
+              ))}
+            </div>
+          </motion.div>
+        )}
+
+        {/* Inventory Tab */}
+        {activeTab === 'inventory' && (
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="px-4 mt-6"
+          >
+            <div className="flex items-center justify-between mb-4">
+              <div>
+                <h3 className="text-lg font-bold text-gray-900">Home Inventory</h3>
+                <p className="text-sm text-gray-500">Total Value: $12,700</p>
+              </div>
+              <Button size="sm" className="bg-purple-600 hover:bg-purple-700">
+                <Plus className="h-4 w-4 mr-1" />
+                Add Item
+              </Button>
+            </div>
+            <div className="grid grid-cols-2 gap-3">
+              {inventoryItems.map((item, idx) => (
+                <motion.div
+                  key={item.id}
+                  initial={{ opacity: 0, scale: 0.9 }}
+                  animate={{ opacity: 1, scale: 1 }}
+                  transition={{ delay: idx * 0.05 }}
+                  className="bg-white rounded-2xl overflow-hidden shadow-sm border border-gray-100"
+                >
+                  <div className="aspect-square relative">
+                    <img
+                      src={item.photo}
+                      alt={item.name}
+                      className="w-full h-full object-cover"
+                    />
+                  </div>
+                  <div className="p-3">
+                    <p className="font-bold text-sm text-gray-900 truncate">{item.name}</p>
+                    <p className="text-xs text-gray-500 mt-1">{item.category}</p>
+                    <p className="text-sm font-bold text-purple-600 mt-2">{item.value}</p>
+                  </div>
+                </motion.div>
+              ))}
+            </div>
+          </motion.div>
+        )}
+
+        {/* Policy Tab */}
+        {activeTab === 'policy' && (
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="px-4 mt-6"
+          >
+            <div className="bg-gradient-to-br from-blue-50 to-blue-100/50 rounded-2xl p-5 border border-blue-200 shadow-sm">
+              <div className="flex items-center gap-2 mb-4">
+                <FileText className="h-5 w-5 text-blue-600" />
+                <h3 className="font-bold text-gray-900">Policy Details</h3>
+              </div>
+              
+              <div className="grid grid-cols-2 gap-4">
+                <div className="bg-white/60 rounded-xl p-3">
+                  <p className="text-xs text-blue-600 font-medium mb-1">Policy Number</p>
+                  <p className="font-semibold text-blue-900 text-sm">{policyDetails.policyNumber}</p>
+                </div>
+                <div className="bg-white/60 rounded-xl p-3">
+                  <p className="text-xs text-blue-600 font-medium mb-1">Provider</p>
+                  <p className="font-semibold text-blue-900 text-sm">{policyDetails.provider}</p>
+                </div>
+                <div className="bg-white/60 rounded-xl p-3">
+                  <p className="text-xs text-blue-600 font-medium mb-1">Premium</p>
+                  <p className="font-semibold text-blue-900 text-sm">{policyDetails.premium}</p>
+                </div>
+                <div className="bg-white/60 rounded-xl p-3">
+                  <p className="text-xs text-blue-600 font-medium mb-1">Coverage</p>
+                  <p className="font-semibold text-blue-900 text-sm">{policyDetails.coverage}</p>
+                </div>
+                <div className="bg-white/60 rounded-xl p-3">
+                  <p className="text-xs text-blue-600 font-medium mb-1">Effective Date</p>
+                  <p className="font-semibold text-blue-900 text-sm">{policyDetails.effectiveDate}</p>
+                </div>
+                <div className="bg-white/60 rounded-xl p-3">
+                  <p className="text-xs text-blue-600 font-medium mb-1">Expiry Date</p>
+                  <p className="font-semibold text-blue-900 text-sm">{policyDetails.expiryDate}</p>
+                </div>
+              </div>
+
+              <div className="mt-4 pt-4 border-t border-blue-200">
+                <div className="flex items-center gap-2">
+                  <User className="h-4 w-4 text-blue-600" />
+                  <div>
+                    <p className="text-xs text-blue-600 font-medium">Agent</p>
+                    <p className="text-blue-900 font-semibold">{policyDetails.agent}</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </motion.div>
+        )}
+
         {/* Action Button */}
-        <div className="px-4 mt-6">
+        <div className="px-4 mt-6 pb-6">
           {isAgentView ? (
             <Button 
               className="w-full h-14 text-lg font-semibold bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 shadow-lg text-white" 
@@ -377,6 +644,21 @@ export default function PropertyDetail() {
           )}
         </div>
       </div>
+
+      {/* Floating Action Button (FAB) for Quick Photo Capture */}
+      {!isAgentView && (
+        <motion.button
+          initial={{ scale: 0, opacity: 0 }}
+          animate={{ scale: 1, opacity: 1 }}
+          transition={{ delay: 0.5, type: "spring", stiffness: 260, damping: 20 }}
+          whileHover={{ scale: 1.1 }}
+          whileTap={{ scale: 0.9 }}
+          onClick={() => navigate('/capture')}
+          className="fixed bottom-24 right-4 w-16 h-16 bg-gradient-to-br from-primary to-blue-600 rounded-full shadow-2xl flex items-center justify-center z-50 hover:shadow-primary/50 transition-shadow"
+        >
+          <Camera className="h-7 w-7 text-white" />
+        </motion.button>
+      )}
     </MobileLayout>
   );
 }

@@ -39,6 +39,14 @@ import RequestPhotos from "./pages/agent/RequestPhotos";
 import Renewals from "./pages/agent/Renewals";
 import ChecklistTemplates from "./pages/agent/ChecklistTemplates";
 
+// Web Platform Pages
+import Companies from "./pages/web/Companies";
+import CompanyDetail from "./pages/web/CompanyDetail";
+import PropertiesList from "./pages/web/PropertiesList";
+import PropertyDetailWeb from "./pages/web/PropertyDetailWeb";
+import OwnersManagement from "./pages/web/OwnersManagement";
+import AgentsManagement from "./pages/web/AgentsManagement";
+
 import Splash from "./pages/Splash";
 import NotFound from "./pages/NotFound";
 
@@ -88,6 +96,14 @@ const App = () => (
             <Route path="/agent/templates" element={<ChecklistTemplates />} />
             <Route path="/agent/profile" element={<AgentProfile />} />
             <Route path="/agent/notifications" element={<AgentNotifications />} />
+
+            {/* Web Platform Routes (Desktop/Admin) */}
+            <Route path="/companies" element={<Companies />} />
+            <Route path="/companies/:id" element={<CompanyDetail />} />
+            <Route path="/web/properties" element={<PropertiesList />} />
+            <Route path="/web/properties/:id" element={<PropertyDetailWeb />} />
+            <Route path="/owners" element={<OwnersManagement />} />
+            <Route path="/agents" element={<AgentsManagement />} />
 
             {/* 404 */}
             <Route path="*" element={<NotFound />} />

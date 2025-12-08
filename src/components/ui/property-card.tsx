@@ -9,14 +9,14 @@ interface PropertyCardProps {
 }
 
 const conditionStyles = {
-  good: 'bg-success/10 text-success',
-  fair: 'bg-warning/10 text-warning',
-  poor: 'bg-destructive/10 text-destructive',
+  good: 'bg-white/70 text-green-600',
+  fair: 'bg-white/70 text-yellow-600',
+  poor: 'bg-white/70 text-red-600',
 };
 
 const riskStyles = {
-  low: 'bg-success/10 text-success border-success/20',
-  medium: 'bg-warning/10 text-warning border-warning/20',
+  low: 'bg-green-600/10 text-green-600 border-green-600/20',
+  medium: 'bg-yellow-600/10 text-yellow-600 border-yellow-600/20',
   high: 'bg-destructive/10 text-destructive border-destructive/20',
 };
 
@@ -40,7 +40,7 @@ export function PropertyCard({ property, onPress }: PropertyCardProps) {
         )}
         {property.conditionScore && (
           <Badge className={cn(
-            'absolute top-2 right-2 text-xs',
+            'absolute top-2 right-2 text-xs bg-white',
             conditionStyles[property.conditionScore]
           )}>
             {property.conditionScore.toUpperCase()}

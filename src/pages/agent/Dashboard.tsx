@@ -62,6 +62,7 @@ export default function AgentDashboard() {
                 title="Properties"
                 value="47"
                 icon={Building2}
+                trend={{ value: 62, isPositive: true }}
                 variant="default"
               />
             </button>
