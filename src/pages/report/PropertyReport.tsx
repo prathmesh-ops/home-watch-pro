@@ -259,14 +259,6 @@ export default function PropertyReport() {
             >
               Access Report
             </Button>
-            
-            <Button
-              variant="outline"
-              onClick={() => navigate('/')}
-              className="w-full"
-            >
-              Back to Home
-            </Button>
           </div>
         </motion.div>
       </div>
