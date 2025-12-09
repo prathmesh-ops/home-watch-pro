@@ -1,11 +1,14 @@
 import { useParams, useNavigate, useLocation } from 'react-router-dom';
 import { useState } from 'react';
 import { motion } from 'framer-motion';
-import { MapPin, Calendar, Camera, Shield, AlertTriangle, ChevronRight, Plus, FileText, DollarSign, User, Clock, Image, CheckSquare, Package, Circle, CheckCircle2 } from 'lucide-react';
+import { MapPin, Calendar, Camera, Shield, AlertTriangle, ChevronRight, Plus, FileText, DollarSign, User, Clock, Image, CheckSquare, Package, Circle, CheckCircle2, Download, Share2, Printer, FileDown } from 'lucide-react';
 import { MobileLayout } from '@/components/layout/MobileLayout';
 import { PageHeader } from '@/components/layout/PageHeader';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
 import { cn } from '@/lib/utils';
 
 const propertyImages = [
@@ -120,6 +123,23 @@ export default function PropertyDetail() {
   const location = useLocation();
   const isAgentView = location.pathname.startsWith('/agent');
   const [activeTab, setActiveTab] = useState('overview');
+  const [showReportDialog, setShowReportDialog] = useState(false);
+  const [reportCode, setReportCode] = useState('');
+  const [isGeneratingReport, setIsGeneratingReport] = useState(false);
+
+  const generateReport = async () => {
+    if (!reportCode.trim()) return;
+    
+    setIsGeneratingReport(true);
+    // Simulate report generation
+    setTimeout(() => {
+      const reportUrl = `/report/${id}?code=${reportCode}`;
+      navigate(reportUrl);
+      setShowReportDialog(false);
+      setReportCode('');
+      setIsGeneratingReport(false);
+    }, 1500);
+  };
 
   return (
     <MobileLayout>
@@ -624,7 +644,55 @@ export default function PropertyDetail() {
         )}
 
         {/* Action Button */}
-        <div className="px-4 mt-6 pb-6">
+        <div className="px-4 mt-6 pb-6 space-y-3">
+          {/* Generate Report Button */}
+          <Dialog open={showReportDialog} onOpenChange={setShowReportDialog}>
+            <DialogTrigger asChild>
+              <Button 
+                className="w-full h-14 text-lg font-semibold bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 shadow-lg text-white" 
+              >
+                <FileDown className="h-5 w-5 mr-2" />
+                Generate Report for this Property
+              </Button>
+            </DialogTrigger>
+            <DialogContent className="sm:max-w-md">
+              <DialogHeader>
+                <DialogTitle>Generate Property Report</DialogTitle>
+              </DialogHeader>
+              <div className="space-y-4">
+                <div className="space-y-2">
+                  <Label htmlFor="report-code">Access Code</Label>
+                  <Input
+                    id="report-code"
+                    placeholder="Enter access code for report"
+                    value={reportCode}
+                    onChange={(e) => setReportCode(e.target.value)}
+                    className="w-full"
+                  />
+                  <p className="text-sm text-gray-500">
+                    This code will be required to view the generated report
+                  </p>
+                </div>
+                <div className="flex gap-3">
+                  <Button 
+                    variant="outline" 
+                    onClick={() => setShowReportDialog(false)}
+                    className="flex-1"
+                  >
+                    Cancel
+                  </Button>
+                  <Button 
+                    onClick={generateReport}
+                    disabled={!reportCode.trim() || isGeneratingReport}
+                    className="flex-1 bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700"
+                  >
+                    {isGeneratingReport ? 'Generating...' : 'Generate Report'}
+                  </Button>
+                </div>
+              </div>
+            </DialogContent>
+          </Dialog>
+          
           {isAgentView ? (
             <Button 
               className="w-full h-14 text-lg font-semibold bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 shadow-lg text-white" 

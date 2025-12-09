@@ -25,6 +25,7 @@ import PhotoGallery from "./pages/homeowner/PhotoGallery";
 import PhotoCompare from "./pages/homeowner/PhotoCompare";
 import PhotoRequests from "./pages/homeowner/PhotoRequests";
 import WeatherAlertDetail from "./pages/homeowner/WeatherAlertDetail";
+import PropertyReport from "./pages/report/PropertyReport";
 
 // Agent Pages
 import AgentDashboard from "./pages/agent/Dashboard";
@@ -82,6 +83,9 @@ const App = () => (
             <Route path="/notifications" element={<Notifications />} />
             <Route path="/checklist" element={<Checklist />} />
             <Route path="/inventory" element={<Inventory />} />
+
+            {/* Report Routes */}
+            <Route path="/report/:id" element={<PropertyReport />} />
 
             {/* Agent Routes */}
             <Route path="/agent/dashboard" element={<AgentDashboard />} />
